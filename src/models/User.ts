@@ -1,5 +1,6 @@
 import Sequelize from 'sequelize';
 import { SequelizeAttributes } from './typings/SequelizeAttributes';
+import { Factory } from './typings/ModelInterface';
 
 export interface UserAttributes {
     id?: number;
@@ -14,7 +15,7 @@ export interface UserInstance extends Sequelize.Instance<UserAttributes>, UserAt
 
 }
 
-export const UserFactory: Function = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize.DataTypes): Sequelize.Model<UserInstance, UserAttributes> => {
+export const UserFactory: Factory<UserInstance, UserAttributes> = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize.DataTypes): Sequelize.Model<UserInstance, UserAttributes> => {
     const attributes: SequelizeAttributes<UserAttributes> = {
         name: {
             type: DataTypes.STRING(191),
@@ -30,7 +31,11 @@ export const UserFactory: Function = (sequelize: Sequelize.Sequelize, DataTypes:
         }
     }
     const User: Sequelize.Model<UserInstance, UserAttributes> =
-        sequelize.define<UserInstance, UserAttributes>('user', attributes);
+        sequelize.define<UserInstance, UserAttributes>(
+            'user',
+            attributes,
+            { underscored: true, defaultScope: { attributes: { exclude: ['password'] } } }
+        );
 
     return User;
 }
