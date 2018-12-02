@@ -2,7 +2,11 @@ import Sequelize from 'sequelize';
 import { UserInstance, UserAttributes } from '../User';
 import { TokenInstance, TokenAttributes } from '../Token';
 
-export default interface ModelFactoryInterface {
+interface Obj {
+    [s: string]: any;
+}
+
+export default interface ModelFactoryInterface extends Obj {
     sequelize: Sequelize.Sequelize;
     Sequelize: Sequelize.SequelizeStatic;
     User: Sequelize.Model<UserInstance, UserAttributes>;

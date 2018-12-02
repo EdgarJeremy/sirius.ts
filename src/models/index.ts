@@ -21,6 +21,12 @@ const createModels: Function = (): ModelFactoryInterface => {
         Token: TokenFactory(sequelize, Sequelize)
     };
 
+    Object.keys(db).forEach((model: string): void => {
+        if(db[model].associate) {
+            db[model].associate(db);
+        }
+    });
+
     return db;
 }
 

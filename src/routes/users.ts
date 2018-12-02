@@ -3,11 +3,12 @@ import ModelFactoryInterface from '../models/typings/ModelFactoryInterface';
 import { Routes } from './typings/RouteInterface';
 import a from '../middlewares/wrapper/a';
 import { OkResponse } from './typings/BodyBuilderInterface';
+import { TokenInstance } from '../models/Token';
 
-const usersRoutes: Routes = (app: express.Application, models: ModelFactoryInterface): express.Router => {
+const usersRoute: Routes = (app: express.Application, models: ModelFactoryInterface): express.Router => {
     const router: express.Router = express.Router();
 
-    router.get('/', a((req: express.Request, res: express.Response) => {
+    router.get('/', a(async (req: express.Request, res: express.Response) => {
         const body: OkResponse = {
             status: true,
             body: {}
@@ -18,4 +19,4 @@ const usersRoutes: Routes = (app: express.Application, models: ModelFactoryInter
     return router;
 }
 
-export default usersRoutes;
+export default usersRoute;
