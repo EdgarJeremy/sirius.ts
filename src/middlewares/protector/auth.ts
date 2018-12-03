@@ -5,7 +5,7 @@ const onlyAuth: Function = (): express.Handler => {
     return (req: express.Request, res: express.Response, next: express.NextFunction): void => {
         if (!req.user) {
             const body: ErrorResponse = {
-                errors: 'Unauthenticated'
+                errors: [{ msg: 'Akses ditolak (session)' }]
             };
             res.status(401).json(body);
         }

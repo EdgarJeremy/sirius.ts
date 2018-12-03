@@ -26,7 +26,6 @@ const route: Routes = (app: express.Application, models: ModelFactoryInterface):
             if (bcrypt.compareSync(password, user.password)) {
                 await Token.update({ used: true }, { where: { user_id: user.id || 0 } });
                 const tokens: TokenStructureResponse | ObjectKeyValue = await generateTokens(user.id || 0, models);
-                console.log(tokens);
                 const response: OkResponse = { data: { tokens, user } };
                 res.json(response);
             } else throw new AuthError('Login tidak valid');

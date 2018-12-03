@@ -9,12 +9,13 @@ export interface RouteList {
 
 const createRoutes: RouteList = (app: express.Application, models: ModelFactoryInterface): express.Router[] => {
 
-    const routes: string[] = fs.readdirSync(__dirname).filter((fileName: string) => fileName !== 'typings' && fileName !== 'index.ts');
+    const routes: string[] = fs.readdirSync(__dirname).filter((fileName: string) => fileName !== 'typings' && fileName !== 'index.ts' && fileName !== 'index.js');
     const routeList: express.Router[] = [];
     const apiURL: string = process.env.API_URL ? process.env.API_URL : '/api';
 
     routes.forEach((route: string) => {
         route = route.replace('.ts', '');
+        route = route.replace('.js', '');
         const router: any = require(`./${route}`).default;
         if(typeof router === 'function') {
             const routerHandler: express.Router = router(app, models);

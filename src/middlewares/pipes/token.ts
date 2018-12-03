@@ -37,7 +37,6 @@ export const getTokenConfiguration: Function = (): TokenConfigurationInterface =
 }
 
 export const generateTokens: GenerateTokensInterface = async (user_id: number, models: ModelFactoryInterface): Promise<TokenStructureResponse | ObjectKeyValue> => {
-    console.log(user_id);
     try {
         const user: UserInstance | null = await models.User.findOne({ where: { id: user_id } });
         const { tokenSecret, refreshTokenSecret, tokenExpiration, refreshTokenExpiration }: TokenConfigurationInterface = getTokenConfiguration();
