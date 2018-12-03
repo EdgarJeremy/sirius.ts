@@ -7,7 +7,7 @@ import { TokenInstance, TokenAttributes } from './Token';
 export interface UserAttributes {
     id?: number;
     name: string;
-    email: string;
+    username: string;
     password: string;
     created_at?: Date,
     updated_at?: Date
@@ -36,9 +36,10 @@ export const UserFactory: Factory<UserInstance, UserAttributes> = (sequelize: Se
             type: DataTypes.STRING(191),
             allowNull: false
         },
-        email: {
+        username: {
             type: DataTypes.STRING(191),
-            allowNull: false
+            allowNull: false,
+            unique: true
         },
         password: {
             type: DataTypes.STRING(191),
@@ -49,7 +50,7 @@ export const UserFactory: Factory<UserInstance, UserAttributes> = (sequelize: Se
         sequelize.define<UserInstance, UserAttributes>(
             'user',
             attributes,
-            { underscored: true, defaultScope: { attributes: { exclude: ['password'] } } }
+            { underscored: true }
         );
 
     User.associate = (models: Sequelize.Models): void => {

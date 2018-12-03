@@ -1,17 +1,24 @@
 import express from 'express';
-import { ErrorResponse, OkResponse, ErrorItem } from '../../routes/typings/BodyBuilderInterface';
+import { ErrorResponse, ErrorItem } from '../../routes/typings/BodyBuilderInterface';
 import Sequelize from 'sequelize';
 import { A } from '../../routes/typings/RouteInterface';
+import AuthError from '../../classes/AuthError';
 
 const a: A = (handler: express.Handler): express.Handler => {
     return (req: express.Request, res: express.Response, next: express.NextFunction): Promise<express.Handler> => {
-        return Promise.resolve(handler(req, res, next)).catch((err: Error | Sequelize.UniqueConstraintError | Sequelize.ValidationError) => {
+        return Promise.resolve(handler(req, res, next)).catch((err: Error | AuthError | Sequelize.UniqueConstraintError | Sequelize.ValidationError) => {
             if (err.name === 'SequelizeUniqueConstraintError' || err.name === 'SequelizeValidationError') {
+                const response: ErrorResponse = { errors: extractErrorResponse(err) };
                 res.status(422);
-                res.json(extractErrorResponse(err));
+                res.json(response);
+            } else if (err.name === 'AuthError') {
+                const response: ErrorResponse = { errors: [{ msg: err.message }] };
+                res.status(401);
+                res.json(response);
             } else {
+                const response: ErrorResponse = { errors: [{ msg: err.message }] }
                 res.status(500);
-                res.json(err.toString());
+                res.json(response);
             }
         });
     }
@@ -19,10 +26,10 @@ const a: A = (handler: express.Handler): express.Handler => {
 
 const extractErrorResponse: Function = (err: Sequelize.UniqueConstraintError | Sequelize.ValidationError): ErrorResponse => {
     const errors: ErrorItem[] = err.errors.map((errItem: Sequelize.ValidationErrorItem): ErrorItem => ({
-        field: errItem.path,
-        value: errItem.value,
-        message: errItem.message
+        param: errItem.path,
+        msg: errItem.message
     }));
+
     return { errors };
 }
 

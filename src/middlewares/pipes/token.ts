@@ -36,21 +36,23 @@ export const getTokenConfiguration: Function = (): TokenConfigurationInterface =
     }
 }
 
-export const generateTokens: GenerateTokensInterface = async (id: number, models: ModelFactoryInterface): Promise<TokenStructureResponse | ObjectKeyValue> => {
+export const generateTokens: GenerateTokensInterface = async (user_id: number, models: ModelFactoryInterface): Promise<TokenStructureResponse | ObjectKeyValue> => {
+    console.log(user_id);
     try {
-        const user: UserInstance | null = await models.User.findOne({ where: { id } });
+        const user: UserInstance | null = await models.User.findOne({ where: { id: user_id } });
         const { tokenSecret, refreshTokenSecret, tokenExpiration, refreshTokenExpiration }: TokenConfigurationInterface = getTokenConfiguration();
 
         if (user) {
             let token: string = jwt.sign({ id: user.id }, tokenSecret, { expiresIn: tokenExpiration });
             let refreshToken: string = jwt.sign({ id: user.id }, refreshTokenSecret + user.password, { expiresIn: refreshTokenExpiration });
-            await models.Token.create({
+            const tokenInstance: TokenInstance = await models.Token.create({
                 refresh_token: refreshToken,
                 used: false
             });
+            tokenInstance.setUser(user);
             return { token, refreshToken }
         } else return {};
-    } catch (e) { return {} }
+    } catch (e) { console.log(e); return {} }
 
 }
 export const generateNewTokens: GenerateNewTokensInterface = async (refreshToken: string, models: ModelFactoryInterface): Promise<TokenStructureResponse | ObjectKeyValue> => {

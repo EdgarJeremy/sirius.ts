@@ -15,4 +15,22 @@
 	// 	],
 	// 	"description": "Log output to console"
 	// }
+	"Sirius Router": {
+		"scope": "javascript,typescript",
+		"prefix": "sr-route",
+		"body": [
+			"import express from 'express';",
+			"import ModelFactoryInterface from '../models/typings/ModelFactoryInterface';",
+			"import { Routes } from './typings/RouteInterface';",
+			"import { OkResponse } from './typings/BodyBuilderInterface';",
+			"",
+			"const route: Routes = (app: express.Application, models: ModelFactoryInterface): express.Router => {",
+			"    const router: express.Router = express.Router();",
+			"",
+			"    return router;",
+			"}",
+			"",
+			"export default route"
+		]
+	}
 }
