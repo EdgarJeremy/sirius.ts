@@ -12,7 +12,8 @@ const createModels: Function = (): ModelFactoryInterface => {
             useUTC: true
         },
         timezone: "+08:00",
-        operatorsAliases: false
+        operatorsAliases: false,
+        logging: process.env.SYSTEM_LOGGING === 'true' ? console.log : (msg: string) => { }
     });
     const db: ModelFactoryInterface = {
         sequelize,
@@ -22,7 +23,7 @@ const createModels: Function = (): ModelFactoryInterface => {
     };
 
     Object.keys(db).forEach((model: string): void => {
-        if(db[model].associate) {
+        if (db[model].associate) {
             db[model].associate(db);
         }
     });

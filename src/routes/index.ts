@@ -4,13 +4,17 @@ import fs from 'fs';
 import ModelFactoryInterface from '../models/typings/ModelFactoryInterface';
 
 export interface RouteList {
-    (app: express.Application, models: ModelFactoryInterface): express.Router[];
+    (app: express.Application, models: ModelFactoryInterface): SiriusRouter[];
+}
+export interface SiriusRouter extends express.Router {
+    basepoint: string;
 }
 
-const createRoutes: RouteList = (app: express.Application, models: ModelFactoryInterface): express.Router[] => {
+const createRoutes: RouteList = (app: express.Application, models: ModelFactoryInterface): SiriusRouter[] => {
 
-    const routes: string[] = fs.readdirSync(__dirname).filter((fileName: string) => fileName !== 'typings' && fileName !== 'index.ts' && fileName !== 'index.js');
-    const routeList: express.Router[] = [];
+    const routes: string[] = fs.readdirSync(__dirname).filter((fileName: string) => fileName !== 'typings' && fileName !== 'index.ts' && fileName !== 'index.js' && fileName.indexOf('.validation.') === -1);
+
+    const routeList: SiriusRouter[] = [];
     const apiURL: string = process.env.API_URL ? process.env.API_URL : '/api';
 
     routes.forEach((route: string) => {
@@ -18,7 +22,8 @@ const createRoutes: RouteList = (app: express.Application, models: ModelFactoryI
         route = route.replace('.js', '');
         const router: any = require(`./${route}`).default;
         if(typeof router === 'function') {
-            const routerHandler: express.Router = router(app, models);
+            const routerHandler: SiriusRouter = router(app, models);
+            routerHandler.basepoint = route;
             app.use(`${apiURL}/${route}`, routerHandler);
             routeList.push(routerHandler);
         }

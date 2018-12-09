@@ -3,11 +3,11 @@ import express from 'express';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import bcrypt from 'bcrypt';
+import path from 'path';
 
 import ModelFactoryInterface from "./models/typings/ModelFactoryInterface";
 import createModels from "./models";
-import createRoutes from "./routes";
+import createRoutes, { SiriusRouter } from "./routes";
 import tokenMiddleware from "./middlewares/pipes/token";
 
 /** import .env file configuration */
@@ -25,7 +25,43 @@ app.use(cors({ origin: allowOrigins, credentials: true }));
 app.use(tokenMiddleware(models)); // token auth
 
 /** router configuration */
-const routes: express.Router[] = createRoutes(app, models);
+const routes: SiriusRouter[] = createRoutes(app, models);
+const apiURL: string = process.env.API_URL ? process.env.API_URL : '/api';
+let routeData: any = {};
+
+/** extract route data */
+routes.forEach((route: SiriusRouter) => {
+    const key: string = `${apiURL}/${route.basepoint}`;
+    routeData[key] = { endpoints: [] };
+    route.stack.forEach((info: any) => {
+        let { route }: { route: any } = info;
+        if (route) {
+            let endpoint: string = route.path;
+            let verbs: any = route.methods.get ? 'GET' : (route.methods.post ? 'POST' : (route.methods.put ? 'PUT' : 'DELETE'));
+            let keys: any = info.keys.map((t: any) => t.name);
+            routeData[key].endpoints.push({ endpoint, verbs, keys });
+        }
+    });
+});
+
+/** meta route for inspector */
+app.get('/app_meta', (req: express.Request, res: express.Response): void => {
+    let data: { routes: any[]; models: any[] } = { routes: [], models: [] };
+    Object.keys(routeData).forEach((route: any) => {
+        data.routes.push({
+            basepoint: route,
+            endpoints: routeData[route].endpoints
+        });
+    });
+    res.json(data);
+});
+
+/** root route */
+if(process.env.NODE_ENV === 'development') {
+    app.use(express.static(path.resolve(__dirname, '..', 'inspector')));
+} else {
+    app.use(express.static(path.resolve(__dirname, '..', 'frontend')));
+}
 
 /** sync models & start server */
 models.sequelize.sync({
