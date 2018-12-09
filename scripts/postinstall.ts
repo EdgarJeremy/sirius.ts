@@ -22,6 +22,10 @@ TOKEN_SECRET=
 REFRESH_TOKEN_SECRET=
 TOKEN_EXPIRATION=1m
 REFRESH_TOKEN_EXPIRATION=7d
+
+# System
+SYSTEM_LOGGING=false
+NODE_ENV=development
 `;
 
 log(chalk.cyan('(postinstall) : Membuat file .env'));
