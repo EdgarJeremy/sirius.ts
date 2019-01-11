@@ -4,6 +4,10 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import path from 'path';
+import http from 'http';
+import socketio from 'socket.io';
+import _ from 'lodash';
+
 
 import ModelFactoryInterface from "./models/typings/ModelFactoryInterface";
 import createModels from "./models";
@@ -15,6 +19,8 @@ dotenv.config();
 
 /** app variables */
 const app: express.Application = express();
+const web: http.Server = new http.Server(app);
+const io: socketio.Server = socketio(web);
 const models: ModelFactoryInterface = createModels();
 const allowOrigins: string | string[] = process.env.ALLOW_ORIGIN ? (process.env.ALLOW_ORIGIN === '*' ? '*' : (process.env.ALLOW_ORIGIN.split(',').map((origin: string) => origin.trim()))) : `http://localhost:${process.env.PORT || 1234}`;
 
@@ -25,7 +31,7 @@ app.use(cors({ origin: allowOrigins, credentials: true }));
 app.use(tokenMiddleware(models)); // token auth
 
 /** router configuration */
-const routes: SiriusRouter[] = createRoutes(app, models);
+const routes: SiriusRouter[] = createRoutes(app, models, io);
 const apiURL: string = process.env.API_URL ? process.env.API_URL : '/api';
 let routeData: any = {};
 
@@ -53,11 +59,20 @@ app.get('/app_meta', (req: express.Request, res: express.Response): void => {
             endpoints: routeData[route].endpoints
         });
     });
+    Object.keys(models).forEach((modelName: string) => {
+        if (['sequelize', 'Sequelize'].indexOf(modelName) === -1) {
+            data.models.push({
+                name: modelName,
+                basepoint: models[modelName].getTableName(),
+                attributes: models[modelName].rawAttributes
+            });
+        }
+    });
     res.json(data);
 });
 
 /** root route */
-if(process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'development') {
     app.use(express.static(path.resolve(__dirname, '..', 'inspector')));
 } else {
     app.use(express.static(path.resolve(__dirname, '..', 'frontend')));
@@ -65,9 +80,10 @@ if(process.env.NODE_ENV === 'development') {
 
 /** sync models & start server */
 models.sequelize.sync({
-    force: process.env.DB_FORCE_RENEW === 'true'
+    force: process.env.DB_FORCE_RENEW === 'true',
+    alter: false
 }).then((): void => {
-    app.listen(process.env.PORT || 1234, (): void => {
+    web.listen(process.env.PORT || 1234, (): void => {
         console.log('App running');
     });
 });

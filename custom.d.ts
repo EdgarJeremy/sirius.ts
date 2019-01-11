@@ -4,7 +4,7 @@ import { UserInstance } from './src/models/User';
 declare global {
     namespace Express {
         interface Request {
-            user: UserInstance | null | undefined;
+            user: UserInstance;
         }
     }
 }

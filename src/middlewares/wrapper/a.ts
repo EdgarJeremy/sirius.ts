@@ -15,6 +15,10 @@ const a: A = (handler: express.Handler): express.Handler => {
                 const response: ErrorResponse = { errors: [{ msg: err.message }] };
                 res.status(401);
                 res.json(response);
+            } else if (err.name === 'NotFoundError') {
+                const response: ErrorResponse = { errors: [{ msg: err.message }] };
+                res.status(404);
+                res.json(response);
             } else {
                 const response: ErrorResponse = { errors: [{ msg: err.message }] }
                 res.status(500);
