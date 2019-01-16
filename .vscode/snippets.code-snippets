@@ -32,5 +32,53 @@
 			"",
 			"export default route"
 		]
+	},
+	"Sirius Model": {
+		"scope": "javascript,typescript",
+		"prefix": "sr-model",
+		"body": [
+			"import Sequelize from 'sequelize';",
+			"import { Factory } from './typings/ModelInterface';",
+			"import { SequelizeAttributes } from './typings/SequelizeAttributes';",
+			"import ModelFactoryInterface from './typings/ModelFactoryInterface';",
+			"",
+			"export interface $1Attributes {",
+			"",
+			"}",
+			"",
+			"export interface $1Instance extends Sequelize.Instance<$1Attributes>, $1Attributes {",
+			"",
+			"}",
+			"",
+			"export const $1Factory: Factory<$1Instance, $1Attributes> = (sequelize: Sequelize.Sequelize, DataTypes: Sequelize.DataTypes): Sequelize.Model<$1Instance, $1Attributes> => {",
+			"    const attributes: SequelizeAttributes<$1Attributes> = {",
+			"        ",
+			"    }",
+			"    const $1: Sequelize.Model<$1Instance, $1Attributes> = sequelize.define<$1Instance, $1Attributes>(",
+			"        '$2',",
+			"        attributes,",
+			"        { underscored: true } ",
+			"    );",
+			"",
+			"    $1.associate = (models: ModelFactoryInterface): void => {",
+			"",
+			"    }",
+			"",
+			"    return $1;",
+			"}"
+		]
+	},
+	"Sirius Validation Schema": {
+		"scope": "javascript,typescript",
+		"prefix": "sr-valid",
+		"body": [
+			"import express from 'express';",
+			"import { checkSchema } from 'express-validator/check';",
+			"import wrapValidation from '../middlewares/validation/request';",
+			"",
+			"export const $1: express.Handler[] = wrapValidation(checkSchema({",
+			"",
+			"}));"
+		]
 	}
 }
