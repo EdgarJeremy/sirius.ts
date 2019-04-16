@@ -13,6 +13,7 @@ import ModelFactoryInterface from "./models/typings/ModelFactoryInterface";
 import createModels from "./models";
 import createRoutes, { SiriusRouter } from "./routes";
 import tokenMiddleware from "./middlewares/pipes/token";
+import websocket from './websocket';
 
 /** import .env file configuration */
 dotenv.config();
@@ -23,6 +24,9 @@ const web: http.Server = new http.Server(app);
 const io: socketio.Server = socketio(web);
 const models: ModelFactoryInterface = createModels();
 const allowOrigins: string | string[] = process.env.ALLOW_ORIGIN ? (process.env.ALLOW_ORIGIN === '*' ? '*' : (process.env.ALLOW_ORIGIN.split(',').map((origin: string) => origin.trim()))) : `http://localhost:${process.env.PORT || 1234}`;
+
+/** setup websocket */
+websocket(io);
 
 /** middlewares */
 app.use(bodyParser.json({ limit: process.env.REQUEST_LIMIT || '1024mb' }));
