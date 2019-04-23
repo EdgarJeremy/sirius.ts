@@ -1,5 +1,3 @@
-enum Events {
-    
-}
+enum Events {}
 
 export default Events;

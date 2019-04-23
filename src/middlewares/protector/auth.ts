@@ -1,17 +1,19 @@
 import express from 'express';
-import { ErrorResponse } from '../../routes/typings/BodyBuilderInterface';
-import { UserAttributes } from '../../models/User';
-
+import AuthError from '../../classes/AuthError';
+import a from '../wrapper/a';
 
 function onlyAuth(): express.Handler {
-    return (req: express.Request, res: express.Response, next: express.NextFunction): void => {
-        if (!req.user) {
-            const body: ErrorResponse = {
-                errors: [{ msg: 'Akses ditolak (no session)' }]
-            };
-            res.status(401).json(body);
-        }
-    }
+	return a(
+		async (
+			req: express.Request,
+			res: express.Response,
+			next: express.NextFunction,
+		): Promise<void> => {
+			if (!req.user) {
+				throw new AuthError();
+			} else next();
+		},
+	);
 }
 
 export default onlyAuth;

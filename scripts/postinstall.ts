@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
-const log = console.log;
+const log: (msg: string) => void = console.log;
 
 const dotenv: string = `
 # Database
@@ -30,7 +30,6 @@ NODE_ENV=development
 
 log(chalk.cyan('(postinstall) : Membuat file .env'));
 if (!fs.existsSync(path.resolve(__dirname, '..', '.env'))) {
-    fs.writeFileSync(path.resolve(__dirname, '..', '.env'), dotenv);
+	fs.writeFileSync(path.resolve(__dirname, '..', '.env'), dotenv);
 }
 log(chalk.cyan('(postinstall) : File .env telah dibuat\n'));
-
