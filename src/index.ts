@@ -2,6 +2,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
+import nocache from 'nocache';
 import cors from 'cors';
 import path from 'path';
 import http from 'http';
@@ -36,6 +37,7 @@ app.use(bodyParser.json({ limit: process.env.REQUEST_LIMIT || '1024mb' }));
 app.use(bodyParser.urlencoded({ limit: process.env.REQUEST_LIMIT || '1024mb', extended: true }));
 app.use(cors({ origin: allowOrigins, credentials: true }));
 app.use(tokenMiddleware(models)); // token auth
+app.use(nocache()); // no cache
 
 /** router configuration */
 const routes: SiriusRouter[] = createRoutes(app, models, io);

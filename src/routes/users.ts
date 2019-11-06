@@ -10,12 +10,15 @@ import { createUser, editUser } from './users.validation';
 import { PaginatedResult } from './typings/QueryInterface';
 import sequelize from 'sequelize';
 import { Parser } from '../helpers/Parser';
+import onlyAuth from '../middlewares/protector/auth';
 
 const usersRoute: Routes = (
 	app: express.Application,
 	models: ModelFactoryInterface,
 ): express.Router => {
 	const router: express.Router = express.Router();
+
+	router.use(onlyAuth());
 
 	router.get(
 		'/',
