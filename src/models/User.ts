@@ -14,16 +14,6 @@ export interface UserAttributes {
 }
 
 export interface UserInstance extends Sequelize.Instance<UserAttributes>, UserAttributes {
-	getTokens: Sequelize.HasManyGetAssociationsMixin<TokenInstance>;
-	setTokens: Sequelize.HasManySetAssociationsMixin<TokenInstance, TokenInstance['id']>;
-	addTokens: Sequelize.HasManyAddAssociationsMixin<TokenInstance, TokenInstance['id']>;
-	addToken: Sequelize.HasManyAddAssociationMixin<TokenInstance, TokenInstance['id']>;
-	createToken: Sequelize.HasManyCreateAssociationMixin<TokenAttributes, TokenInstance>;
-	removeToken: Sequelize.HasManyRemoveAssociationMixin<TokenInstance, TokenInstance['id']>;
-	removeTokens: Sequelize.HasManyRemoveAssociationsMixin<TokenInstance, TokenInstance['id']>;
-	hasToken: Sequelize.HasManyHasAssociationMixin<TokenInstance, TokenInstance['id']>;
-	hasTokens: Sequelize.HasManyHasAssociationsMixin<TokenInstance, TokenInstance['id']>;
-	countTokens: Sequelize.HasManyCountAssociationsMixin;
 }
 
 export interface Associate {
@@ -54,7 +44,7 @@ export const UserFactory: Factory<UserInstance, UserAttributes> = (
 		UserAttributes
 	>('user', attributes, { underscored: true });
 
-	User.associate = (models: Sequelize.Models): void => {
+	User.associate = (models: ModelFactoryInterface): void => {
 		User.hasMany(models.Token, { onDelete: 'cascade' });
 	};
 

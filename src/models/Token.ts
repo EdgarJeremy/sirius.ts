@@ -2,6 +2,7 @@ import Sequelize from 'sequelize';
 import { SequelizeAttributes } from './typings/SequelizeAttributes';
 import { Factory } from './typings/ModelInterface';
 import { UserInstance, UserAttributes } from './User';
+import ModelFactoryInterface from './typings/ModelFactoryInterface';
 
 export interface TokenAttributes {
 	id?: number;
@@ -10,9 +11,6 @@ export interface TokenAttributes {
 }
 
 export interface TokenInstance extends Sequelize.Instance<TokenAttributes>, TokenAttributes {
-	getUser: Sequelize.BelongsToGetAssociationMixin<UserInstance>;
-	setUser: Sequelize.BelongsToSetAssociationMixin<UserInstance, UserInstance['id']>;
-	createUser: Sequelize.BelongsToCreateAssociationMixin<UserAttributes, UserInstance>;
 }
 
 export const TokenFactory: Factory<TokenInstance, TokenAttributes> = (
@@ -35,7 +33,7 @@ export const TokenFactory: Factory<TokenInstance, TokenAttributes> = (
 		TokenAttributes
 	>('token', attributes, { underscored: true });
 
-	Token.associate = (models: Sequelize.Models): void => {
+	Token.associate = (models: ModelFactoryInterface): void => {
 		Token.belongsTo(models.User, { onDelete: 'cascade' });
 	};
 

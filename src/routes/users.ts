@@ -41,7 +41,7 @@ const usersRoute: Routes = (
 		'/:id',
 		a(
 			async (req: express.Request, res: express.Response): Promise<void> => {
-				const { id }: { id: number } = req.params;
+				const { id }: any = req.params;
 				const user: UserInstance | null = await models.User.findOne({ where: { id } });
 				if (!user) throw new NotFoundError('User tidak ditemukan');
 				const body: OkResponse = { data: user };
@@ -78,7 +78,7 @@ const usersRoute: Routes = (
 		editUser,
 		a(
 			async (req: express.Request, res: express.Response): Promise<void> => {
-				const { id }: { id: number } = req.params;
+				const { id }: any = req.params;
 				const {
 					name,
 					username,
@@ -98,7 +98,7 @@ const usersRoute: Routes = (
 		'/:id',
 		a(
 			async (req: express.Request, res: express.Response): Promise<void> => {
-				const { id }: { id: number } = req.params;
+				const { id }: any = req.params;
 				const user: UserInstance | null = await models.User.findOne({ where: { id } });
 				if (!user) throw new NotFoundError('User tidak ditemukan');
 				await user.destroy();
