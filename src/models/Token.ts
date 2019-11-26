@@ -11,6 +11,7 @@ export interface TokenAttributes {
 }
 
 export interface TokenInstance extends Sequelize.Instance<TokenAttributes>, TokenAttributes {
+	setUser: Sequelize.BelongsToSetAssociationMixin<UserInstance, UserInstance['id']>;
 }
 
 export const TokenFactory: Factory<TokenInstance, TokenAttributes> = (
