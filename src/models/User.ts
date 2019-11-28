@@ -2,7 +2,6 @@ import Sequelize from 'sequelize';
 import { SequelizeAttributes } from './typings/SequelizeAttributes';
 import { Factory } from './typings/ModelInterface';
 import ModelFactoryInterface from './typings/ModelFactoryInterface';
-import { TokenInstance, TokenAttributes } from './Token';
 
 export interface UserAttributes {
 	id?: number;
