@@ -2,6 +2,9 @@ import Sequelize from 'sequelize';
 import ModelFactoryInterface from './typings/ModelFactoryInterface';
 import { UserFactory } from './User';
 import { TokenFactory } from './Token';
+import { RoomFactory } from './Room';
+import { ParticipantFactory } from './Participant';
+import { TaskFactory } from './Task';
 
 const createModels: Function = (): ModelFactoryInterface => {
 	const {
@@ -26,6 +29,9 @@ const createModels: Function = (): ModelFactoryInterface => {
 		Sequelize,
 		User: UserFactory(sequelize, Sequelize),
 		Token: TokenFactory(sequelize, Sequelize),
+		Room: RoomFactory(sequelize, Sequelize),
+		Participant: ParticipantFactory(sequelize, Sequelize),
+		Task: TaskFactory(sequelize, Sequelize)
 	};
 
 	Object.keys(db).forEach(

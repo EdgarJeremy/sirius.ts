@@ -1,33 +1,36 @@
 import express from 'express';
-import bcrypt from 'bcrypt';
+// @ts-ignore
+import randomize from 'randomize';
 import ModelFactoryInterface from '../models/typings/ModelFactoryInterface';
 import { Routes } from './typings/RouteInterface';
 import a from '../middlewares/wrapper/a';
 import { OkResponse } from './typings/BodyBuilderInterface';
-import { UserAttributes, UserInstance } from '../models/User';
+import { TaskAttributes, TaskInstance } from '../models/Task';
 import NotFoundError from '../classes/NotFoundError';
-import { createUser, editUser } from './users.validation';
 import { PaginatedResult } from './typings/QueryInterface';
 import sequelize from 'sequelize';
 import { Parser } from '../helpers/Parser';
 import onlyAuth from '../middlewares/protector/auth';
 
-const usersRoute: Routes = (
+const tasksRoute: Routes = (
 	app: express.Application,
 	models: ModelFactoryInterface,
 ): express.Router => {
 	const router: express.Router = express.Router();
+
+	router.use(onlyAuth());
 
 	router.get(
 		'/',
 		Parser.validateQ(),
 		a(
 			async (req: express.Request, res: express.Response): Promise<void> => {
-				const parsed: sequelize.FindOptions<UserInstance> = Parser.parseQuery<UserInstance>(
+				const parsed: sequelize.FindOptions<TaskInstance> = Parser.parseQuery<TaskInstance>(
 					req.query.q,
 					models,
 				);
-				const data: PaginatedResult<UserInstance> = await models.User.findAndCountAll(parsed);
+				parsed.attributes = ['id', 'name', 'description', 'due_date'];
+				const data: PaginatedResult<TaskInstance> = await models.Task.findAndCountAll(parsed);
 				const body: OkResponse = { data };
 
 				res.json(body);
@@ -40,9 +43,9 @@ const usersRoute: Routes = (
 		a(
 			async (req: express.Request, res: express.Response): Promise<void> => {
 				const { id }: any = req.params;
-				const user: UserInstance | null = await models.User.findOne({ where: { id } });
-				if (!user) throw new NotFoundError('User tidak ditemukan');
-				const body: OkResponse = { data: user };
+				const task: TaskInstance | null = await models.Task.findOne({ where: { id } });
+				if (!task) throw new NotFoundError('Task tidak ditemukan');
+				const body: OkResponse = { data: task };
 
 				res.json(body);
 			},
@@ -51,15 +54,11 @@ const usersRoute: Routes = (
 
 	router.post(
 		'/',
-		createUser,
 		a(
 			async (req: express.Request, res: express.Response): Promise<void> => {
-				const data: UserAttributes = req.body;
-				const user: UserInstance = await models.User.create({
-					...data,
-					password: bcrypt.hashSync(data.password, 10),
-				});
-				const body: OkResponse = { data: user };
+				const data: TaskAttributes = req.body;
+				const task: TaskInstance = await models.Task.create(data);
+				const body: OkResponse = { data: task };
 
 				res.json(body);
 			},
@@ -68,15 +67,14 @@ const usersRoute: Routes = (
 
 	router.put(
 		'/:id',
-		editUser,
 		a(
 			async (req: express.Request, res: express.Response): Promise<void> => {
 				const { id }: any = req.params;
-				const data: UserAttributes = req.body;
-				const user: UserInstance | null = await models.User.findOne({ where: { id } });
-				if (!user) throw new NotFoundError('User tidak ditemukan');
-				await user.update({ ...data, password: bcrypt.hashSync(data.password, 10) });
-				const body: OkResponse = { data: user };
+				const data: TaskAttributes = req.body;
+				const task: TaskInstance | null = await models.Task.findOne({ where: { id } });
+				if (!task) throw new NotFoundError('Task tidak ditemukan');
+				await task.update(data);
+				const body: OkResponse = { data: task };
 
 				res.json(body);
 			},
@@ -88,10 +86,10 @@ const usersRoute: Routes = (
 		a(
 			async (req: express.Request, res: express.Response): Promise<void> => {
 				const { id }: any = req.params;
-				const user: UserInstance | null = await models.User.findOne({ where: { id } });
-				if (!user) throw new NotFoundError('User tidak ditemukan');
-				await user.destroy();
-				const body: OkResponse = { data: user };
+				const task: TaskInstance | null = await models.Task.findOne({ where: { id } });
+				if (!task) throw new NotFoundError('Task tidak ditemukan');
+				await task.destroy();
+				const body: OkResponse = { data: task };
 
 				res.json(body);
 			},
@@ -101,4 +99,4 @@ const usersRoute: Routes = (
 	return router;
 };
 
-export default usersRoute;
+export default tasksRoute;
