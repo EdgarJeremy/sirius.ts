@@ -7,8 +7,8 @@ export interface DocumentAttributes {
     id?: number;
     name: string;
     file: Blob;
-    owner_id?: number;
-    room_id?: number;
+    participant_id?: number;
+    task_id?: number;
     created_at?: Date;
     updated_at?: Date;
 }
@@ -40,8 +40,8 @@ export const DocumentFactory: Factory<DocumentInstance, DocumentAttributes> = (
     >('document', attributes, { underscored: true });
 
     Document.associate = (models: ModelFactoryInterface): void => {
-        Document.belongsTo(models.User, { onDelete: 'cascade', as: 'owner', foreignKey: 'owner_id' });
-        Document.belongsTo(models.Room, { onDelete: 'cascade' });
+        Document.belongsTo(models.Participant, { onDelete: 'cascade' });
+        Document.belongsTo(models.Task, { onDelete: 'cascade' });
     };
 
     return Document;

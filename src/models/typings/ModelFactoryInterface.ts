@@ -4,6 +4,7 @@ import { TokenInstance, TokenAttributes } from '../Token';
 import { RoomAttributes, RoomInstance } from '../Room';
 import { ParticipantAttributes, ParticipantInstance } from '../Participant';
 import { TaskAttributes, TaskInstance } from '../Task';
+import { DocumentAttributes, DocumentInstance } from '../Document';
 
 interface Obj {
 	[s: string]: any;
@@ -17,4 +18,5 @@ export default interface ModelFactoryInterface extends Obj {
 	Room: Sequelize.Model<RoomInstance, RoomAttributes>;
 	Participant: Sequelize.Model<ParticipantInstance, ParticipantAttributes>;
 	Task: Sequelize.Model<TaskInstance, TaskAttributes>;
+	Document: Sequelize.Model<DocumentInstance, DocumentAttributes>;
 }

@@ -29,7 +29,26 @@ const tasksRoute: Routes = (
 					req.query.q,
 					models,
 				);
+				parsed.distinct = true;
 				parsed.attributes = ['id', 'name', 'description', 'due_date'];
+				if (req.user.type === 'student') {
+					parsed.include = [...parsed.include!, {
+						attributes: ['id'],
+						model: models.Document,
+						include: [{
+							attributes: ['id'],
+							model: models.Participant,
+							include: [{
+								attributes: ['id'],
+								model: models.User,
+								as: 'student',
+								where: { id: req.user.id! },
+								required: true
+							}],
+							required: true
+						}]
+					}]
+				}
 				const data: PaginatedResult<TaskInstance> = await models.Task.findAndCountAll(parsed);
 				const body: OkResponse = { data };
 

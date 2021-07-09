@@ -45,6 +45,7 @@ export const TaskFactory: Factory<TaskInstance, TaskAttributes> = (
 
     Task.associate = (models: ModelFactoryInterface): void => {
         Task.belongsTo(models.Room, { onDelete: 'cascade' });
+        Task.hasMany(models.Document, { onDelete: 'cascade' });
     };
 
     return Task;

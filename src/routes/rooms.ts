@@ -28,12 +28,14 @@ const roomsRoute: Routes = (
 					req.query.q,
 					models,
 				);
+				parsed.distinct = true;
 				parsed.attributes = ['id', 'name', 'code', 'created_at'];
 				if (req.user.type === 'lecturer') {
 					parsed.where = { ...parsed.where, owner_id: req.user.id };
 					parsed.include = [...parsed.include!, { model: models.Participant }, { model: models.Task }];
 				} else {
 					parsed.include = [...parsed.include!, {
+						attributes: ['id'],
 						model: models.Participant,
 						where: { student_id: req.user.id! },
 						required: true
