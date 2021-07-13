@@ -6,7 +6,8 @@ import ModelFactoryInterface from './typings/ModelFactoryInterface';
 export interface DocumentAttributes {
     id?: number;
     name: string;
-    file: Blob;
+    file: string;
+    content: string;
     participant_id?: number;
     task_id?: number;
     created_at?: Date;
@@ -32,6 +33,10 @@ export const DocumentFactory: Factory<DocumentInstance, DocumentAttributes> = (
         file: {
             type: DataTypes.BLOB('long'),
             allowNull: false
+        },
+        content: {
+            type: DataTypes.TEXT,
+            allowNull: false
         }
     };
     const Document: Sequelize.Model<DocumentInstance, DocumentAttributes> = sequelize.define<
@@ -42,6 +47,7 @@ export const DocumentFactory: Factory<DocumentInstance, DocumentAttributes> = (
     Document.associate = (models: ModelFactoryInterface): void => {
         Document.belongsTo(models.Participant, { onDelete: 'cascade' });
         Document.belongsTo(models.Task, { onDelete: 'cascade' });
+        Document.hasMany(models.Difference, { onDelete: 'cascade', foreignKey: 'a_id' });
     };
 
     return Document;

@@ -32,4 +32,7 @@ log(chalk.cyan('(postinstall) : Membuat file .env'));
 if (!fs.existsSync(path.resolve(__dirname, '..', '.env'))) {
 	fs.writeFileSync(path.resolve(__dirname, '..', '.env'), dotenv);
 }
+if (!fs.existsSync(path.resolve(__dirname, '..', 'temp'))) {
+	fs.mkdirSync(path.resolve(__dirname, '..', 'temp'));
+}
 log(chalk.cyan('(postinstall) : File .env telah dibuat\n'));

@@ -37,6 +37,7 @@ export const ParticipantFactory: Factory<ParticipantInstance, ParticipantAttribu
     Participant.associate = (models: ModelFactoryInterface): void => {
         Participant.belongsTo(models.User, { onDelete: 'cascade', as: 'student', foreignKey: 'student_id' });
         Participant.belongsTo(models.Room, { onDelete: 'cascade' });
+        Participant.hasMany(models.Document, { onDelete: 'cascade' });
     };
 
     return Participant;

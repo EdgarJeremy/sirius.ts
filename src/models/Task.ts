@@ -2,18 +2,21 @@ import Sequelize from 'sequelize';
 import { SequelizeAttributes } from './typings/SequelizeAttributes';
 import { Factory } from './typings/ModelInterface';
 import ModelFactoryInterface from './typings/ModelFactoryInterface';
+import { DocumentInstance } from './Document';
 
 export interface TaskAttributes {
     id?: number;
     name: string;
     description: string;
     due_date: Date;
+    checked: boolean;
     room_id?: number;
     created_at?: Date;
     updated_at?: Date;
 }
 
 export interface TaskInstance extends Sequelize.Instance<TaskAttributes>, TaskAttributes {
+    getDocuments: Sequelize.HasManyGetAssociationsMixin<DocumentInstance>;
 }
 
 export interface Associate {
@@ -36,6 +39,11 @@ export const TaskFactory: Factory<TaskInstance, TaskAttributes> = (
         due_date: {
             type: DataTypes.DATE,
             allowNull: false
+        },
+        checked: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
         }
     };
     const Task: Sequelize.Model<TaskInstance, TaskAttributes> = sequelize.define<

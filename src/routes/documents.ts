@@ -1,6 +1,8 @@
 import express from 'express';
+import fs from 'fs';
+import path from 'path';
 // @ts-ignore
-import randomize from 'randomize';
+import reader from 'any-text';
 import ModelFactoryInterface from '../models/typings/ModelFactoryInterface';
 import { Routes } from './typings/RouteInterface';
 import a from '../middlewares/wrapper/a';
@@ -11,6 +13,7 @@ import { PaginatedResult } from './typings/QueryInterface';
 import sequelize from 'sequelize';
 import { Parser } from '../helpers/Parser';
 import onlyAuth from '../middlewares/protector/auth';
+import SiriusError from '../classes/SiriusError';
 
 const documentsRoute: Routes = (
 	app: express.Application,
@@ -56,6 +59,20 @@ const documentsRoute: Routes = (
 		a(
 			async (req: express.Request, res: express.Response): Promise<void> => {
 				const data: DocumentAttributes = req.body;
+
+				const sp = data.name.split('.');
+				const ext: string = sp[sp.length - 1];
+				if (['pdf', 'docx'].indexOf(ext) === -1) throw new SiriusError('Format tidak didukung');
+				const tempDir = path.resolve(app.get('ROOT_DIR'), 'temp');
+				const name = 'temp_doc_' + (new Date()).getTime() + '.' + ext;
+				const tempFile = path.resolve(tempDir, name);
+				fs.writeFileSync(tempFile, Buffer.from(data.file, 'base64'));
+
+				const content = await reader.getText(tempFile);
+				data.content = content.trim();
+
+				fs.unlinkSync(tempFile);
+
 				const document: DocumentInstance = await models.Document.create(data);
 				const body: OkResponse = { data: document };
 

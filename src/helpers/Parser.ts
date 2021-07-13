@@ -18,6 +18,7 @@ export interface ICollectionOptions {
 
 interface ICollectionIncludeOptions extends ICollectionOptions {
 	model: string;
+	required: boolean;
 }
 
 export class Parser {
@@ -33,7 +34,7 @@ export class Parser {
 			include: this.buildIncludes(raw.include, models),
 			group: raw.group,
 			// @ts-ignore
-			as: raw.as
+			as: raw.as,
 		};
 
 		return parsed;
@@ -45,15 +46,16 @@ export class Parser {
 	): (sequelize.Model<any, any> | sequelize.IncludeOptions)[] {
 		return include
 			? include.map((m: ICollectionIncludeOptions) => ({
-					model: models[m.model],
-					attributes: this.buildAttributes(m.attributes),
-					where: m.where,
-					limit: m.limit,
-					offset: m.offset,
-					order: m.order,
-					include: this.buildIncludes(m.include, models),
-					as: m.as
-			  }))
+				model: models[m.model],
+				attributes: this.buildAttributes(m.attributes),
+				where: m.where,
+				limit: m.limit,
+				offset: m.offset,
+				order: m.order,
+				include: this.buildIncludes(m.include, models),
+				as: m.as,
+				required: m.required
+			}))
 			: [];
 	}
 
@@ -62,13 +64,13 @@ export class Parser {
 	): sequelize.FindOptionsAttributesArray {
 		return rawAttributes
 			? rawAttributes.map((f: string) => {
-					const o: string[] = f.split(':');
-					if (o.length > 1) {
-						return sequelize.fn(o[0], o[1]);
-					} else {
-						return f;
-					}
-			  })
+				const o: string[] = f.split(':');
+				if (o.length > 1) {
+					return sequelize.fn(o[0], o[1]);
+				} else {
+					return f;
+				}
+			})
 			: [];
 	}
 

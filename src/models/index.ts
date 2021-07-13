@@ -6,6 +6,7 @@ import { RoomFactory } from './Room';
 import { ParticipantFactory } from './Participant';
 import { TaskFactory } from './Task';
 import { DocumentFactory } from './Document';
+import { DifferenceFactory } from './Difference';
 
 const createModels: Function = (): ModelFactoryInterface => {
 	const {
@@ -22,8 +23,8 @@ const createModels: Function = (): ModelFactoryInterface => {
 			useUTC: true,
 		},
 		timezone: '+08:00',
-		operatorsAliases: false,
-		logging: process.env.SYSTEM_LOGGING === 'true' ? console.log : (msg: string) => {},
+		operatorsAliases: true,
+		logging: process.env.SYSTEM_LOGGING === 'true' ? console.log : (msg: string) => { },
 	});
 	const db: ModelFactoryInterface = {
 		sequelize,
@@ -33,7 +34,8 @@ const createModels: Function = (): ModelFactoryInterface => {
 		Room: RoomFactory(sequelize, Sequelize),
 		Participant: ParticipantFactory(sequelize, Sequelize),
 		Task: TaskFactory(sequelize, Sequelize),
-		Document: DocumentFactory(sequelize, Sequelize)
+		Document: DocumentFactory(sequelize, Sequelize),
+		Difference: DifferenceFactory(sequelize, Sequelize)
 	};
 
 	Object.keys(db).forEach(

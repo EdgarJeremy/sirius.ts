@@ -14,6 +14,7 @@ import createModels from './models';
 import createRoutes, { SiriusRouter } from './routes';
 import tokenMiddleware from './middlewares/pipes/token';
 import websocket from './websocket';
+import { PlagiarismChecker } from './helpers/PlagiarismChecker';
 
 /** import .env file configuration */
 dotenv.config();
@@ -39,6 +40,8 @@ app.use(cors({ origin: allowOrigins, credentials: true }));
 app.use(tokenMiddleware(models)); // token auth
 app.use(nocache()); // no cache
 
+app.set('ROOT_DIR', path.resolve(__dirname, '..'));
+
 /** router configuration */
 const routes: SiriusRouter[] = createRoutes(app, models, io);
 const apiURL: string = process.env.API_URL ? process.env.API_URL : '/api';
@@ -55,10 +58,10 @@ routes.forEach((route: SiriusRouter) => {
 			let verbs: any = route.methods.get
 				? 'GET'
 				: route.methods.post
-				? 'POST'
-				: route.methods.put
-				? 'PUT'
-				: 'DELETE';
+					? 'POST'
+					: route.methods.put
+						? 'PUT'
+						: 'DELETE';
 			let keys: any = info.keys.map((t: any) => t.name);
 			routeData[key].endpoints.push({ endpoint, verbs, keys });
 		}
@@ -104,6 +107,8 @@ models.sequelize
 	})
 	.then(
 		(): void => {
+			const checker = new PlagiarismChecker(models);
+			checker.check();
 			web.listen(
 				process.env.PORT || 1234,
 				(): void => {
